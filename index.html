@@ -20,7 +20,12 @@
             margin-bottom: 5px;
             border-radius: 5px;
         }
-
+		#settings {
+			background-color: black;
+			color: white;
+			padding: 20px;
+			border-radius: 10px;
+		}
         .ride-name {
             font-size: 20px;
         }
@@ -78,9 +83,6 @@
     </div>
     <div id="settings" style="display: none;">
         <h1>Settings</h1>
-        <label for="textColor">Text Color:</label>
-        <input type="color" id="textColor" value="#000000">
-        <br>
         <label for="favoriteColor">Favorite Star Color:</label>
         <input type="color" id="favoriteColor" value="#FFD700">
         <br>
@@ -141,21 +143,18 @@
         });
 
         document.getElementById('applyColors').addEventListener('click', function() {
-            var textColor = document.getElementById('textColor').value;
             var favoriteColor = document.getElementById('favoriteColor').value;
             var lowWaitColor = document.getElementById('lowWaitColor').value;
             var mediumWaitColor = document.getElementById('mediumWaitColor').value;
             var highWaitColor = document.getElementById('highWaitColor').value;
             var extremeWaitColor = document.getElementById('extremeWaitColor').value;
             
-            localStorage.setItem('textColor', textColor);
             localStorage.setItem('favoriteColor', favoriteColor);
             localStorage.setItem('lowWaitColor', lowWaitColor);
             localStorage.setItem('mediumWaitColor', mediumWaitColor);
             localStorage.setItem('highWaitColor', highWaitColor);
             localStorage.setItem('extremeWaitColor', extremeWaitColor);
 
-            document.documentElement.style.setProperty('--text-color', textColor);
             document.documentElement.style.setProperty('--favorite-color', favoriteColor);
             document.getElementById('settings').style.display = "none";
         });
@@ -166,17 +165,14 @@
         });
 
         window.onload = function() {
-            document.getElementById('textColor').value = localStorage.getItem('textColor') || '#000000';
             document.getElementById('favoriteColor').value = localStorage.getItem('favoriteColor') || '#FFD700';
             document.getElementById('lowWaitColor').value = localStorage.getItem('lowWaitColor') || '#008000';
             document.getElementById('mediumWaitColor').value = localStorage.getItem('mediumWaitColor') || '#FFFF00';
             document.getElementById('highWaitColor').value = localStorage.getItem('highWaitColor') || '#FFA500';
             document.getElementById('extremeWaitColor').value = localStorage.getItem('extremeWaitColor') || '#FF0000';
 
-            var textColor = localStorage.getItem('textColor') || '#000000';
             var favoriteColor = localStorage.getItem('favoriteColor') || '#FFD700';
 
-            document.documentElement.style.setProperty('--text-color', textColor);
             document.documentElement.style.setProperty('--favorite-color', favoriteColor);
         };
 
