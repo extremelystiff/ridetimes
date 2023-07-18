@@ -110,68 +110,72 @@
             else return 'red';
         }
 
-	function displayWaitTimes(park) {
-	    setTimeout(function() {
-	        $.getJSON(parkUrls[park], function (data) {
-	            var jsonData = data;
-	            var rides = jsonData.lands.reduce(function(acc, land) {
-	                return acc.concat(land.rides);
-	            }, []);
-	
-	            var favorites = JSON.parse(sessionStorage.getItem('favorites')) || [];
-	
-	            // Filter favorite rides
-	            var favoriteRides = rides.filter(function(ride) {
-	                return favorites.indexOf(ride.id) > -1;
-	            });
-	
-	            // Sort favorite rides alphabetically by name
-	            favoriteRides.sort(function(a, b) {
-	                return a.name.localeCompare(b.name);
-	            });
-	
-	            // Sort all rides based on wait time and name, including favorite rides
-	            rides.sort(function(a, b) {
-	                if (!a.is_open && b.is_open) return 1;
-	                if (a.is_open && !b.is_open) return -1;
-	                if (a.wait_time === 0 && b.wait_time !== 0) return 1;
-	                if (b.wait_time === 0 && a.wait_time !== 0) return -1;
-	                if (a.wait_time === b.wait_time) return a.name.localeCompare(b.name);
-	                return b.wait_time - a.wait_time;
-	            });
-	
-	            // Concatenate favorite and all other rides
-	            var sortedRides = favoriteRides.concat(rides);
-	
-	            $('#data').empty();
-	            sortedRides.forEach(function(ride) {
-	                var waitTime = ride.is_open ? (ride.wait_time === 0 ? 'Walk-on' : ride.wait_time + ' min') : 'Closed';
-	                var statusColor = ride.is_open ? (ride.wait_time === 0 ? 'blue' : getGradientColor(ride.wait_time)) : 'red';
-	
-	                // Check if the ride is favorited
-	                var isFavorite = favorites.indexOf(ride.id) > -1;
-	                var favoriteIcon = isFavorite ? '&#9733;' : '&#9734;';
-	
-	                $('#data').append(`
-	                    <div class="ride" data-ride-id="${ride.id}">
-	                        <span class="ride-name">
-	                            <span class="favorite">${favoriteIcon}</span>
-	                            ${ride.name}
-	                        </span>
-	                        <span class="ride-time" style="color: ${statusColor};">${waitTime}</span>
-	                    </div>
-	                `);
-	            });
-	            $('.ride .favorite').on('click', function() {
-	                var rideId = $(this).parent().parent().data('ride-id');
-	                toggleFavorite(rideId);
-	            });
-	        }).fail(function() {
-	            $('#error').text('Failed to fetch ride data.');
-	        });
-	    }, 0);
-	}
+	 function displayWaitTimes(park) {
+            setTimeout(function() {
+                $.getJSON(parkUrls[park], function (data) {
+                    var jsonData = data;
+                    var rides = jsonData.lands.reduce(function(acc, land) {
+                        return acc.concat(land.rides);
+                    }, []);
 
+                    var favorites = JSON.parse(sessionStorage.getItem('favorites')) || [];
+
+                    // Filter favorite rides
+                    var favoriteRides = rides.filter(function(ride) {
+                        return favorites.indexOf(ride.id) > -1;
+                    });
+
+                    // Sort favorite rides alphabetically by name
+                    favoriteRides.sort(function(a, b) {
+                        return a.name.localeCompare(b.name);
+                    });
+
+                    // Filter non-favorite rides
+                    var nonFavoriteRides = rides.filter(function(ride) {
+                        return favorites.indexOf(ride.id) === -1;
+                    });
+
+                    // Sort non-favorite rides based on wait time and name
+                    nonFavoriteRides.sort(function(a, b) {
+                        if (!a.is_open && b.is_open) return 1;
+                        if (a.is_open && !b.is_open) return -1;
+                        if (a.wait_time === 0 && b.wait_time !== 0) return 1;
+                        if (b.wait_time === 0 && a.wait_time !== 0) return -1;
+                        if (a.wait_time === b.wait_time) return a.name.localeCompare(b.name);
+                        return b.wait_time - a.wait_time;
+                    });
+
+                    // Concatenate favorite and non-favorite rides
+                    var sortedRides = favoriteRides.concat(nonFavoriteRides);
+
+                    $('#data').empty();
+                    sortedRides.forEach(function(ride) {
+                        var waitTime = ride.is_open ? (ride.wait_time === 0 ? 'Walk-on' : ride.wait_time + ' min') : 'Closed';
+                        var statusColor = ride.is_open ? (ride.wait_time === 0 ? 'blue' : getGradientColor(ride.wait_time)) : 'red';
+
+                        // Check if the ride is favorited
+                        var isFavorite = favorites.indexOf(ride.id) > -1;
+                        var favoriteIcon = isFavorite ? '&#9733;' : '&#9734;';
+
+						$('#data').append(`
+							<div class="ride" data-ride-id="${ride.id}">
+								<span class="ride-name">
+									<span class="favorite">${favoriteIcon}</span>
+									${ride.name}
+								</span>
+								<span class="ride-time" style="color: ${statusColor};">${waitTime}</span>
+							</div>
+						`);
+                    });
+					$('.ride .favorite').on('click', function() {
+						var rideId = $(this).parent().parent().data('ride-id');
+						toggleFavorite(rideId);
+					});
+                }).fail(function() {
+                    $('#error').text('Failed to fetch ride data.');
+                });
+            }, 0);
+        }
 
         function updateWeather(park) {
             $('.weatherwidgetio')
