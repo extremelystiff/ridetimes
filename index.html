@@ -78,27 +78,24 @@
     </div>
     <div id="settings" style="display: none;">
         <h1>Settings</h1>
-        <label for="bgColor">Background Color:</label>
-        <input type="color" id="bgColor">
-        <br>
         <label for="textColor">Text Color:</label>
-        <input type="color" id="textColor">
+        <input type="color" id="textColor" value="#000000">
         <br>
         <label for="favoriteColor">Favorite Star Color:</label>
-        <input type="color" id="favoriteColor">
+        <input type="color" id="favoriteColor" value="#FFD700">
         <br>
         <h1>Wait Time Colors:</h1>
         <label for="lowWaitColor">Low (Under 21 mins):</label>
-        <input type="color" id="lowWaitColor">
+        <input type="color" id="lowWaitColor" value="#008000">
         <br>
         <label for="mediumWaitColor">Medium (21-60 mins):</label>
-        <input type="color" id="mediumWaitColor">
+        <input type="color" id="mediumWaitColor" value="#FFFF00">
         <br>
         <label for="highWaitColor">High (60-120 mins):</label>
-        <input type="color" id="highWaitColor">
+        <input type="color" id="highWaitColor" value="#FFA500">
         <br>
         <label for="extremeWaitColor">Extreme (Over 120 mins):</label>
-        <input type="color" id="extremeWaitColor">
+        <input type="color" id="extremeWaitColor" value="#FF0000">
         <br>
         <button id="applyColors">Apply Colors</button>
         <button id="resetColors">Reset to Defaults</button>
@@ -131,59 +128,59 @@
             kingsIsland: 'MASON'
         };
 
-	function getGradientColor(minute) {
-		if (minute < 21) return localStorage.getItem('lowWaitColor') || 'green';
-		else if (minute < 60) return localStorage.getItem('mediumWaitColor') || 'yellow';
-		else if (minute < 120) return localStorage.getItem('highWaitColor') || 'orange';
-		else return localStorage.getItem('extremeWaitColor') || 'red';
-	}
-	$('#settingsButton').click(function() {
-		$('#settings').show();
-	});
 
-	$('#applyColors').click(function() {
-		var bgColor = $('#bgColor').val();
-		var textColor = $('#textColor').val();
-		var favoriteColor = $('#favoriteColor').val();
-		var lowWaitColor = $('#lowWaitColor').val();
-		var mediumWaitColor = $('#mediumWaitColor').val();
-		var highWaitColor = $('#highWaitColor').val();
-		var extremeWaitColor = $('#extremeWaitColor').val();
-		
-		localStorage.setItem('bgColor', bgColor);
-		localStorage.setItem('textColor', textColor);
-		localStorage.setItem('favoriteColor', favoriteColor);
-		localStorage.setItem('lowWaitColor', lowWaitColor);
-		localStorage.setItem('mediumWaitColor', mediumWaitColor);
-		localStorage.setItem('highWaitColor', highWaitColor);
-		localStorage.setItem('extremeWaitColor', extremeWaitColor);
+        function getGradientColor(minute) {
+            if (minute < 21) return localStorage.getItem('lowWaitColor') || '#008000';
+            else if (minute < 60) return localStorage.getItem('mediumWaitColor') || '#FFFF00';
+            else if (minute < 120) return localStorage.getItem('highWaitColor') || '#FFA500';
+            else return localStorage.getItem('extremeWaitColor') || '#FF0000';
+        }
 
-		$('#dynamicStyles').html(`body {background-color: ${bgColor}; color: ${textColor};}`);
-		$('.favorite').css('color', favoriteColor);
-		$('#settings').hide();
-	});
+        document.getElementById('settingsButton').addEventListener('click', function() {
+            document.getElementById('settings').style.display = "block";
+        });
 
-	$('#resetColors').click(function() {
-		localStorage.clear();
-		location.reload();
-	});
+        document.getElementById('applyColors').addEventListener('click', function() {
+            var textColor = document.getElementById('textColor').value;
+            var favoriteColor = document.getElementById('favoriteColor').value;
+            var lowWaitColor = document.getElementById('lowWaitColor').value;
+            var mediumWaitColor = document.getElementById('mediumWaitColor').value;
+            var highWaitColor = document.getElementById('highWaitColor').value;
+            var extremeWaitColor = document.getElementById('extremeWaitColor').value;
+            
+            localStorage.setItem('textColor', textColor);
+            localStorage.setItem('favoriteColor', favoriteColor);
+            localStorage.setItem('lowWaitColor', lowWaitColor);
+            localStorage.setItem('mediumWaitColor', mediumWaitColor);
+            localStorage.setItem('highWaitColor', highWaitColor);
+            localStorage.setItem('extremeWaitColor', extremeWaitColor);
 
-	$(document).ready(function() {
-		$('#bgColor').val(localStorage.getItem('bgColor') || '#ffffff');
-		$('#textColor').val(localStorage.getItem('textColor') || '#000000');
-		$('#favoriteColor').val(localStorage.getItem('favoriteColor') || 'gold');
-		$('#lowWaitColor').val(localStorage.getItem('lowWaitColor') || 'green');
-		$('#mediumWaitColor').val(localStorage.getItem('mediumWaitColor') || 'yellow');
-		$('#highWaitColor').val(localStorage.getItem('highWaitColor') || 'orange');
-		$('#extremeWaitColor').val(localStorage.getItem('extremeWaitColor') || 'red');
+            document.documentElement.style.setProperty('--text-color', textColor);
+            document.documentElement.style.setProperty('--favorite-color', favoriteColor);
+            document.getElementById('settings').style.display = "none";
+        });
 
-		var bgColor = localStorage.getItem('bgColor') || '#ffffff';
-		var textColor = localStorage.getItem('textColor') || '#000000';
-		var favoriteColor = localStorage.getItem('favoriteColor') || 'gold';
+        document.getElementById('resetColors').addEventListener('click', function() {
+            localStorage.clear();
+            location.reload();
+        });
 
-		$('#dynamicStyles').html(`body {background-color: ${bgColor}; color: ${textColor};}`);
-		$('.favorite').css('color', favoriteColor);
-	});
+        window.onload = function() {
+            document.getElementById('textColor').value = localStorage.getItem('textColor') || '#000000';
+            document.getElementById('favoriteColor').value = localStorage.getItem('favoriteColor') || '#FFD700';
+            document.getElementById('lowWaitColor').value = localStorage.getItem('lowWaitColor') || '#008000';
+            document.getElementById('mediumWaitColor').value = localStorage.getItem('mediumWaitColor') || '#FFFF00';
+            document.getElementById('highWaitColor').value = localStorage.getItem('highWaitColor') || '#FFA500';
+            document.getElementById('extremeWaitColor').value = localStorage.getItem('extremeWaitColor') || '#FF0000';
+
+            var textColor = localStorage.getItem('textColor') || '#000000';
+            var favoriteColor = localStorage.getItem('favoriteColor') || '#FFD700';
+
+            document.documentElement.style.setProperty('--text-color', textColor);
+            document.documentElement.style.setProperty('--favorite-color', favoriteColor);
+        };
+
+
 	 function displayWaitTimes(park) {
             setTimeout(function() {
                 $.getJSON(parkUrls[park], function (data) {
