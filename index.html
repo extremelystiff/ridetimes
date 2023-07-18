@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style id="dynamicStyles">
         body {
@@ -148,6 +148,14 @@
         document.getElementById('settingsButton').addEventListener('click', function() {
             document.getElementById('settings').style.display = "block";
         });
+		$('#settingsButton').click(function() {
+			if($('#settings').is(':visible')) {
+				applyColorSettings();
+				$('#settings').hide();
+			} else {
+				$('#settings').show();
+			}
+		});
 
         document.getElementById('applyColors').addEventListener('click', function() {
             var favoriteColor = document.getElementById('favoriteColor').value;
