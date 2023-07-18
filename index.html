@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
+    <style id="dynamicStyles">
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
@@ -73,7 +73,35 @@
 <body>
     <div class="header">
         <button id="cedarPointButton">Cedar Point</button>
+        <button id="settingsButton">Settings</button>
         <button id="kingsIslandButton">Kings Island</button>
+    </div>
+    <div id="settings" style="display: none;">
+        <h1>Settings</h1>
+        <label for="bgColor">Background Color:</label>
+        <input type="color" id="bgColor">
+        <br>
+        <label for="textColor">Text Color:</label>
+        <input type="color" id="textColor">
+        <br>
+        <label for="favoriteColor">Favorite Star Color:</label>
+        <input type="color" id="favoriteColor">
+        <br>
+        <h1>Wait Time Colors:</h1>
+        <label for="lowWaitColor">Low (Under 21 mins):</label>
+        <input type="color" id="lowWaitColor">
+        <br>
+        <label for="mediumWaitColor">Medium (21-60 mins):</label>
+        <input type="color" id="mediumWaitColor">
+        <br>
+        <label for="highWaitColor">High (60-120 mins):</label>
+        <input type="color" id="highWaitColor">
+        <br>
+        <label for="extremeWaitColor">Extreme (Over 120 mins):</label>
+        <input type="color" id="extremeWaitColor">
+        <br>
+        <button id="applyColors">Apply Colors</button>
+        <button id="resetColors">Reset to Defaults</button>
     </div>
 
     <div style="overflow-y: auto; height: 100vh;">
@@ -104,12 +132,58 @@
         };
 
 	function getGradientColor(minute) {
-            if (minute < 21) return 'green';
-            else if (minute < 60) return 'yellow';
-            else if (minute < 120) return 'orange';
-            else return 'red';
-        }
+		if (minute < 21) return localStorage.getItem('lowWaitColor') || 'green';
+		else if (minute < 60) return localStorage.getItem('mediumWaitColor') || 'yellow';
+		else if (minute < 120) return localStorage.getItem('highWaitColor') || 'orange';
+		else return localStorage.getItem('extremeWaitColor') || 'red';
+	}
+	$('#settingsButton').click(function() {
+		$('#settings').show();
+	});
 
+	$('#applyColors').click(function() {
+		var bgColor = $('#bgColor').val();
+		var textColor = $('#textColor').val();
+		var favoriteColor = $('#favoriteColor').val();
+		var lowWaitColor = $('#lowWaitColor').val();
+		var mediumWaitColor = $('#mediumWaitColor').val();
+		var highWaitColor = $('#highWaitColor').val();
+		var extremeWaitColor = $('#extremeWaitColor').val();
+		
+		localStorage.setItem('bgColor', bgColor);
+		localStorage.setItem('textColor', textColor);
+		localStorage.setItem('favoriteColor', favoriteColor);
+		localStorage.setItem('lowWaitColor', lowWaitColor);
+		localStorage.setItem('mediumWaitColor', mediumWaitColor);
+		localStorage.setItem('highWaitColor', highWaitColor);
+		localStorage.setItem('extremeWaitColor', extremeWaitColor);
+
+		$('#dynamicStyles').html(`body {background-color: ${bgColor}; color: ${textColor};}`);
+		$('.favorite').css('color', favoriteColor);
+		$('#settings').hide();
+	});
+
+	$('#resetColors').click(function() {
+		localStorage.clear();
+		location.reload();
+	});
+
+	$(document).ready(function() {
+		$('#bgColor').val(localStorage.getItem('bgColor') || '#ffffff');
+		$('#textColor').val(localStorage.getItem('textColor') || '#000000');
+		$('#favoriteColor').val(localStorage.getItem('favoriteColor') || 'gold');
+		$('#lowWaitColor').val(localStorage.getItem('lowWaitColor') || 'green');
+		$('#mediumWaitColor').val(localStorage.getItem('mediumWaitColor') || 'yellow');
+		$('#highWaitColor').val(localStorage.getItem('highWaitColor') || 'orange');
+		$('#extremeWaitColor').val(localStorage.getItem('extremeWaitColor') || 'red');
+
+		var bgColor = localStorage.getItem('bgColor') || '#ffffff';
+		var textColor = localStorage.getItem('textColor') || '#000000';
+		var favoriteColor = localStorage.getItem('favoriteColor') || 'gold';
+
+		$('#dynamicStyles').html(`body {background-color: ${bgColor}; color: ${textColor};}`);
+		$('.favorite').css('color', favoriteColor);
+	});
 	 function displayWaitTimes(park) {
             setTimeout(function() {
                 $.getJSON(parkUrls[park], function (data) {
