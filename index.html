@@ -103,6 +103,12 @@
             kingsIsland: 'MASON'
         };
 
+	function getGradientColor(minute) {
+            if (minute < 21) return 'green';
+            else if (minute < 60) return 'yellow';
+            else if (minute < 120) return 'orange';
+            else return 'red';
+        }
 
 	function displayWaitTimes(park) {
 	    setTimeout(function() {
