@@ -152,16 +152,20 @@
                         var isFavorite = favorites.indexOf(ride.id) > -1;
                         var favoriteIcon = isFavorite ? '&#9733;' : '&#9734;';
 
-                        $('#data').append(`
-                            <div class="ride">
-                                <span class="ride-name">
-                                    <span class="favorite" onclick="toggleFavorite(${ride.id})">${favoriteIcon}</span>
-                                    ${ride.name}
-                                </span>
-                                <span class="ride-time" style="color: ${statusColor};">${waitTime}</span>
-                            </div>
-                        `);
+						$('#data').append(`
+							<div class="ride" data-ride-id="${ride.id}">
+								<span class="ride-name">
+									<span class="favorite">${favoriteIcon}</span>
+									${ride.name}
+								</span>
+								<span class="ride-time" style="color: ${statusColor};">${waitTime}</span>
+							</div>
+						`);
                     });
+					$('.ride .favorite').on('click', function() {
+						var rideId = $(this).parent().parent().data('ride-id');
+						toggleFavorite(rideId);
+					});
                 }).fail(function() {
                     $('#error').text('Failed to fetch ride data.');
                 });
@@ -169,7 +173,7 @@
         }
 
         function updateWeather(park) {
-            $('.weatherwidget-io')
+            $('.weatherwidgetio')
                 .attr('href', weatherUrls[park])
                 .text(parkNames[park] + ' WEATHER');
         }
@@ -179,6 +183,27 @@
             updateWeather(park);
             displayWaitTimes(park);
         }
+
+		function toggleFavorite(rideId) {
+			var favorites = JSON.parse(sessionStorage.getItem('favorites')) || [];
+
+			// If the ride is already favorited, remove it from the favorites
+			if (favorites.indexOf(rideId) > -1) {
+				favorites = favorites.filter(function(id) {
+					return id !== rideId;
+				});
+			}
+			// If the ride is not favorited, add it to the favorites
+			else {
+				favorites.push(rideId);
+			}
+
+			sessionStorage.setItem('favorites', JSON.stringify(favorites));
+
+			// Refresh the ride list to reflect the changes
+			var selectedPark = sessionStorage.getItem('selectedPark') || 'cedarPoint';
+			displayWaitTimes(selectedPark);
+		}
 
         $(document).ready(function() {
             var selectedPark = sessionStorage.getItem('selectedPark') || 'cedarPoint';
