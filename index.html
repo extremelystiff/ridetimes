@@ -40,16 +40,42 @@
             color: red;
         }
 
-        /* Add the following CSS to make the weather widget unclickable */
+        
         .weatherwidget-io {
             pointer-events: none;
             cursor: default;
             text-decoration: none;
             color: inherit;
         }
+		
+        .header {
+            display: flex;
+            justify-content: space-between;
+            background-color: black;
+            color: white;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .header button {
+            background-color: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .header button.active {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
+    <div class="header">
+        <button id="cedarPointButton">Cedar Point</button>
+        <button id="kingsIslandButton">Kings Island</button>
+    </div>
+
     <div style="overflow-y: auto; height: 100vh;">
         <a class="weatherwidget-io" href="https://forecast7.com/en/41d41n82d69/44870/?unit=us" data-label_1="SANDUSKY" data-label_2="WEATHER" data-font="Arial" data-mode="Current" data-theme="dark">SANDUSKY WEATHER</a>
         <script>
@@ -59,34 +85,29 @@
         <div id="data"></div>
         <p id="error"></p>
     </div>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-        // Function to handle adding/removing a ride from favorites
-        function toggleFavorite(rideId) {
-            var favorites = JSON.parse(sessionStorage.getItem('favorites')) || [];
+        var parkUrls = {
+            cedarPoint: 'https://script.google.com/macros/s/AKfycbw9_VDZ0aQ8XLzDceMCfwtYPXa5D9uty4gceJzE0Gi8vr9xIkd519ClK-jbbiPaKtak/exec',
+            kingsIsland: 'https://script.google.com/macros/s/AKfycbytrvrhTC3SEidF_QsHD1bIQH6JnI2OUAvAbNC4R7HV_0p49XrMhWSbw2LiDUHbQpDy/exec'
+        };
 
-            // Check if the ride is already favorited
-            var index = favorites.indexOf(rideId);
-            if (index > -1) {
-                favorites.splice(index, 1); // Remove from favorites
-            } else {
-                favorites.push(rideId); // Add to favorites
-            }
+        var weatherUrls = {
+            cedarPoint: 'https://forecast7.com/en/41d41n82d69/44870/?unit=us',
+            kingsIsland: 'https://forecast7.com/en/39d36n84d31/mason/?unit=us'
+        };
 
-            sessionStorage.setItem('favorites', JSON.stringify(favorites));
-            displayWaitTimes();
-        }
+        var parkNames = {
+            cedarPoint: 'SANDUSKY',
+            kingsIsland: 'MASON'
+        };
 
-        function getGradientColor(minute) {
-            if (minute < 21) return 'green';
-            else if (minute < 60) return 'yellow';
-            else if (minute < 120) return 'orange';
-            else return 'red';
-        }
+        // Your existing functions...
 
-        function displayWaitTimes() {
+        function displayWaitTimes(park) {
             setTimeout(function() {
-                $.getJSON('https://script.google.com/macros/s/AKfycbw9_VDZ0aQ8XLzDceMCfwtYPXa5D9uty4gceJzE0Gi8vr9xIkd519ClK-jbbiPaKtak/exec', function (data) {
+                $.getJSON(parkUrls[park], function (data) {
                     var jsonData = data;
                     var rides = jsonData.lands.reduce(function(acc, land) {
                         return acc.concat(land.rides);
@@ -147,9 +168,33 @@
             }, 0);
         }
 
+        function updateWeather(park) {
+            $('.weatherwidget-io')
+                .attr('href', weatherUrls[park])
+                .text(parkNames[park] + ' WEATHER');
+        }
+
+        function selectPark(park) {
+            sessionStorage.setItem('selectedPark', park);
+            updateWeather(park);
+            displayWaitTimes(park);
+        }
+
         $(document).ready(function() {
-            displayWaitTimes();
-            setInterval(displayWaitTimes, 5 * 60 * 1000);  // Update every 5 minutes
+            var selectedPark = sessionStorage.getItem('selectedPark') || 'cedarPoint';
+            selectPark(selectedPark);
+
+            $('#cedarPointButton').click(function() {
+                $(this).addClass('active');
+                $('#kingsIslandButton').removeClass('active');
+                selectPark('cedarPoint');
+            });
+
+            $('#kingsIslandButton').click(function() {
+                $(this).addClass('active');
+                $('#cedarPointButton').removeClass('active');
+                selectPark('kingsIsland');
+            });
         });
     </script>
 </body>
