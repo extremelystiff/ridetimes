@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-image: url('https://cdn-cloudfront.cfauthx.com/binaries/content/gallery/cp-en-us/poi/entertainment/events/cp-lutp-large-desktop-banner.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        .ride {
+            background-color: black;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+
+        .ride-name {
+            font-size: 20px;
+        }
+
+        .ride-time {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .favorite {
+            color: gold;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        #error {
+            color: red;
+        }
+
+        /* Add the following CSS to make the weather widget unclickable */
+        .weatherwidget-io {
+            pointer-events: none;
+            cursor: default;
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
+</head>
+<body>
+    <div style="overflow-y: auto; height: 100vh;">
+        <a class="weatherwidget-io" href="https://forecast7.com/en/41d41n82d69/44870/?unit=us" data-label_1="SANDUSKY" data-label_2="WEATHER" data-font="Arial" data-mode="Current" data-theme="dark">SANDUSKY WEATHER</a>
+        <script>
+        !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
+        </script>
+        <p class="timestamp"></p>
+        <div id="data"></div>
+        <p id="error"></p>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        // Function to handle adding/removing a ride from favorites
+        function toggleFavorite(rideId) {
+            var favorites = JSON.parse(sessionStorage.getItem('favorites')) || [];
+
+            // Check if the ride is already favorited
+            var index = favorites.indexOf(rideId);
+            if (index > -1) {
+                favorites.splice(index, 1); // Remove from favorites
+            } else {
+                favorites.push(rideId); // Add to favorites
+            }
+
+            sessionStorage.setItem('favorites', JSON.stringify(favorites));
+            displayWaitTimes();
+        }
+
+        function getGradientColor(minute) {
+            if (minute < 21) return 'green';
+            else if (minute < 60) return 'yellow';
+            else if (minute < 120) return 'orange';
+            else return 'red';
+        }
+
+        function displayWaitTimes() {
+            setTimeout(function() {
+                $.getJSON('https://script.google.com/macros/s/AKfycbw9_VDZ0aQ8XLzDceMCfwtYPXa5D9uty4gceJzE0Gi8vr9xIkd519ClK-jbbiPaKtak/exec', function (data) {
+                    var jsonData = data;
+                    var rides = jsonData.lands.reduce(function(acc, land) {
+                        return acc.concat(land.rides);
+                    }, []);
+
+                    var favorites = JSON.parse(sessionStorage.getItem('favorites')) || [];
+
+                    // Filter favorite rides
+                    var favoriteRides = rides.filter(function(ride) {
+                        return favorites.indexOf(ride.id) > -1;
+                    });
+
+                    // Sort favorite rides alphabetically by name
+                    favoriteRides.sort(function(a, b) {
+                        return a.name.localeCompare(b.name);
+                    });
+
+                    // Filter non-favorite rides
+                    var nonFavoriteRides = rides.filter(function(ride) {
+                        return favorites.indexOf(ride.id) === -1;
+                    });
+
+                    // Sort non-favorite rides based on wait time and name
+                    nonFavoriteRides.sort(function(a, b) {
+                        if (!a.is_open && b.is_open) return 1;
+                        if (a.is_open && !b.is_open) return -1;
+                        if (a.wait_time === 0 && b.wait_time !== 0) return 1;
+                        if (b.wait_time === 0 && a.wait_time !== 0) return -1;
+                        if (a.wait_time === b.wait_time) return a.name.localeCompare(b.name);
+                        return b.wait_time - a.wait_time;
+                    });
+
+                    // Concatenate favorite and non-favorite rides
+                    var sortedRides = favoriteRides.concat(nonFavoriteRides);
+
+                    $('#data').empty();
+                    sortedRides.forEach(function(ride) {
+                        var waitTime = ride.is_open ? (ride.wait_time === 0 ? 'Walk-on' : ride.wait_time + ' min') : 'Closed';
+                        var statusColor = ride.is_open ? (ride.wait_time === 0 ? 'blue' : getGradientColor(ride.wait_time)) : 'red';
+
+                        // Check if the ride is favorited
+                        var isFavorite = favorites.indexOf(ride.id) > -1;
+                        var favoriteIcon = isFavorite ? '&#9733;' : '&#9734;';
+
+                        $('#data').append(`
+                            <div class="ride">
+                                <span class="ride-name">
+                                    <span class="favorite" onclick="toggleFavorite(${ride.id})">${favoriteIcon}</span>
+                                    ${ride.name}
+                                </span>
+                                <span class="ride-time" style="color: ${statusColor};">${waitTime}</span>
+                            </div>
+                        `);
+                    });
+                }).fail(function() {
+                    $('#error').text('Failed to fetch ride data.');
+                });
+            }, 0);
+        }
+
+        $(document).ready(function() {
+            displayWaitTimes();
+            setInterval(displayWaitTimes, 5 * 60 * 1000);  // Update every 5 minutes
+        });
+    </script>
+</body>
+</html>
