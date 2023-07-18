@@ -10,9 +10,9 @@
             background-repeat: no-repeat;
         }
 
-        .ride {
-            background-color: black;
-            color: white;
+		.ride {
+			background-color: var(--ride-bg-color, black);
+			color: var(--ride-text-color, white);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -20,12 +20,12 @@
             margin-bottom: 5px;
             border-radius: 5px;
         }
-	#settings {
-		background-color: black;
-		color: white;
-		padding: 20px;
-		border-radius: 10px;
-	}
+		#settings {
+			background-color: black;
+			color: white;
+			padding: 20px;
+			border-radius: 10px;
+		}
         .ride-name {
             font-size: 20px;
         }
@@ -35,11 +35,11 @@
             font-weight: bold;
         }
 
-	.favorite {
-		color: var(--favorite-color, gold);
-		margin-right: 10px;
-		cursor: pointer;
-	}
+		.favorite {
+			color: var(--favorite-color, gold);
+			margin-right: 10px;
+			cursor: pointer;
+		}
 
 
         #error {
@@ -86,6 +86,10 @@
         <h1>Settings</h1>
         <label for="favoriteColor">Favorite Star Color:</label>
         <input type="color" id="favoriteColor" value="#FFD700">
+		<label for="rideTextColor">Ride Text Color:</label>
+		<input type="color" id="rideTextColor" value="#ffffff">
+		<label for="rideBgColor">Ride Background Color:</label>
+		<input type="color" id="rideBgColor" value="#000000">
         <br>
         <h1>Wait Time Colors:</h1>
         <label for="lowWaitColor">Low (Under 21 mins):</label>
@@ -149,14 +153,20 @@
             var mediumWaitColor = document.getElementById('mediumWaitColor').value;
             var highWaitColor = document.getElementById('highWaitColor').value;
             var extremeWaitColor = document.getElementById('extremeWaitColor').value;
+			var rideTextColor = document.getElementById('rideTextColor').value;
+			var rideBgColor = document.getElementById('rideBgColor').value;
             
             localStorage.setItem('favoriteColor', favoriteColor);
             localStorage.setItem('lowWaitColor', lowWaitColor);
             localStorage.setItem('mediumWaitColor', mediumWaitColor);
             localStorage.setItem('highWaitColor', highWaitColor);
             localStorage.setItem('extremeWaitColor', extremeWaitColor);
+			localStorage.setItem('rideTextColor', rideTextColor);
+			localStorage.setItem('rideBgColor', rideBgColor);
 
-            document.documentElement.style.setProperty('--favorite-color', favoriteColor);
+			document.documentElement.style.setProperty('--favorite-color', favoriteColor);
+			document.documentElement.style.setProperty('--ride-text-color', rideTextColor);
+			document.documentElement.style.setProperty('--ride-bg-color', rideBgColor);
             document.getElementById('settings').style.display = "none";
         });
 
@@ -165,17 +175,24 @@
             location.reload();
         });
 
-        window.onload = function() {
-            document.getElementById('favoriteColor').value = localStorage.getItem('favoriteColor') || '#FFD700';
-            document.getElementById('lowWaitColor').value = localStorage.getItem('lowWaitColor') || '#008000';
-            document.getElementById('mediumWaitColor').value = localStorage.getItem('mediumWaitColor') || '#FFFF00';
-            document.getElementById('highWaitColor').value = localStorage.getItem('highWaitColor') || '#FFA500';
-            document.getElementById('extremeWaitColor').value = localStorage.getItem('extremeWaitColor') || '#FF0000';
+		window.onload = function() {
+			document.getElementById('favoriteColor').value = localStorage.getItem('favoriteColor') || '#FFD700';
+			document.getElementById('lowWaitColor').value = localStorage.getItem('lowWaitColor') || '#008000';
+			document.getElementById('mediumWaitColor').value = localStorage.getItem('mediumWaitColor') || '#FFFF00';
+			document.getElementById('highWaitColor').value = localStorage.getItem('highWaitColor') || '#FFA500';
+			document.getElementById('extremeWaitColor').value = localStorage.getItem('extremeWaitColor') || '#FF0000';
+			document.getElementById('rideTextColor').value = localStorage.getItem('rideTextColor') || '#ffffff';
+			document.getElementById('rideBgColor').value = localStorage.getItem('rideBgColor') || '#000000';
 
-            var favoriteColor = localStorage.getItem('favoriteColor') || '#FFD700';
+			var favoriteColor = localStorage.getItem('favoriteColor') || '#FFD700';
+			var rideTextColor = localStorage.getItem('rideTextColor') || '#ffffff';
+			var rideBgColor = localStorage.getItem('rideBgColor') || '#000000';
 
-            document.documentElement.style.setProperty('--favorite-color', favoriteColor);
-        };
+			document.documentElement.style.setProperty('--favorite-color', favoriteColor);
+			document.documentElement.style.setProperty('--ride-text-color', rideTextColor);
+			document.documentElement.style.setProperty('--ride-bg-color', rideBgColor);
+		};
+
 
 
 	 function displayWaitTimes(park) {
