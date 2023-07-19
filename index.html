@@ -190,9 +190,6 @@
             <input type="checkbox" id="toggleWeatherWidget" checked>
             <span class="slider round"></span>
         </div>
-        <br>
-        <button id="applyColors">Apply Colors</button>
-        <button id="resetColors">Reset to Defaults</button>
     </div>
 
     <div style="overflow-y: auto; height: 100vh;">
@@ -230,9 +227,10 @@
             else return localStorage.getItem('extremeWaitColor') || '#FF0000';
         }
 
-        document.getElementById('settingsButton').addEventListener('click', function() {
-            document.getElementById('settings').style.display = "block";
-        });
+		document.getElementById('settingsButton').addEventListener('click', function() {
+			var settings = document.getElementById('settings');
+			settings.style.display = (settings.style.display === "none") ? "block" : "none";
+		});
 
         document.getElementById('applyColors').addEventListener('click', function() {
             var favoriteColor = document.getElementById('favoriteColor').value;
