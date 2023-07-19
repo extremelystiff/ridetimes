@@ -145,32 +145,34 @@
             else return localStorage.getItem('extremeWaitColor') || '#FF0000';
         }
 
-        document.getElementById('settingsButton').addEventListener('click', function() {
-            document.getElementById('settings').style.display = "block";
-        });
+	document.getElementById('settingsButton').addEventListener('click', function() {
+	    var settings = document.getElementById('settings');
+	    settings.style.display = (settings.style.display === "none") ? "block" : "none";
+	});
+	
+	document.getElementById('applyColors').addEventListener('click', function() {
+	    var favoriteColor = document.getElementById('favoriteColor').value;
+	    var lowWaitColor = document.getElementById('lowWaitColor').value;
+	    var mediumWaitColor = document.getElementById('mediumWaitColor').value;
+	    var highWaitColor = document.getElementById('highWaitColor').value;
+	    var extremeWaitColor = document.getElementById('extremeWaitColor').value;
+	    var rideTextColor = document.getElementById('rideTextColor').value;
+	    var rideBgColor = document.getElementById('rideBgColor').value;
+	            
+	    localStorage.setItem('favoriteColor', favoriteColor);
+	    localStorage.setItem('lowWaitColor', lowWaitColor);
+	    localStorage.setItem('mediumWaitColor', mediumWaitColor);
+	    localStorage.setItem('highWaitColor', highWaitColor);
+	    localStorage.setItem('extremeWaitColor', extremeWaitColor);
+	    localStorage.setItem('rideTextColor', rideTextColor);
+	    localStorage.setItem('rideBgColor', rideBgColor);
+	
+	    document.documentElement.style.setProperty('--favorite-color', favoriteColor);
+	    document.documentElement.style.setProperty('--ride-text-color', rideTextColor);
+	    document.documentElement.style.setProperty('--ride-bg-color', rideBgColor);
+	    document.getElementById('settings').style.display = "none";
+	});
 
-        document.getElementById('applyColors').addEventListener('click', function() {
-            var favoriteColor = document.getElementById('favoriteColor').value;
-            var lowWaitColor = document.getElementById('lowWaitColor').value;
-            var mediumWaitColor = document.getElementById('mediumWaitColor').value;
-            var highWaitColor = document.getElementById('highWaitColor').value;
-            var extremeWaitColor = document.getElementById('extremeWaitColor').value;
-			var rideTextColor = document.getElementById('rideTextColor').value;
-			var rideBgColor = document.getElementById('rideBgColor').value;
-            
-            localStorage.setItem('favoriteColor', favoriteColor);
-            localStorage.setItem('lowWaitColor', lowWaitColor);
-            localStorage.setItem('mediumWaitColor', mediumWaitColor);
-            localStorage.setItem('highWaitColor', highWaitColor);
-            localStorage.setItem('extremeWaitColor', extremeWaitColor);
-			localStorage.setItem('rideTextColor', rideTextColor);
-			localStorage.setItem('rideBgColor', rideBgColor);
-
-			document.documentElement.style.setProperty('--favorite-color', favoriteColor);
-			document.documentElement.style.setProperty('--ride-text-color', rideTextColor);
-			document.documentElement.style.setProperty('--ride-bg-color', rideBgColor);
-            document.getElementById('settings').style.display = "none";
-        });
 
         document.getElementById('resetColors').addEventListener('click', function() {
             localStorage.clear();
