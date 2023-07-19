@@ -76,6 +76,81 @@
         .header button.active {
             text-decoration: underline;
         }
+		#applyColors, #resetColors {
+			background-color: #4CAF50;
+			border: none;
+			color: white;
+			padding: 15px 32px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 16px;
+			margin: 4px 2px;
+			cursor: pointer;
+			border-radius: 4px;
+			transition-duration: 0.4s;
+		}
+
+		#applyColors:hover, #resetColors:hover {
+			background-color: white;
+			color: black;
+		}
+
+		/* Toggle switch */
+		.switch {
+			position: relative;
+			display: inline-block;
+			width: 60px;
+			height: 34px;
+		}
+
+		.switch input {
+			opacity: 0;
+			width: 0;
+			height: 0;
+		}
+
+		.slider {
+			position: absolute;
+			cursor: pointer;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background-color: #ccc;
+			transition: .4s;
+		}
+
+		.slider:before {
+			position: absolute;
+			content: "";
+			height: 26px;
+			width: 26px;
+			left: 4px;
+			bottom: 4px;
+			background-color: white;
+			transition: .4s;
+		}
+
+		input:checked + .slider {
+			background-color: #2196F3;
+		}
+
+		input:focus + .slider {
+			box-shadow: 0 0 1px #2196F3;
+		}
+
+		input:checked + .slider:before {
+			transform: translateX(26px);
+		}
+
+		.slider.round {
+			border-radius: 34px;
+		}
+
+		.slider.round:before {
+			border-radius: 50%;
+		}
     </style>
 </head>
 <body>
@@ -108,10 +183,20 @@
         <br>
         <button id="applyColors">Apply Colors</button>
         <button id="resetColors">Reset to Defaults</button>
+		<br>
+        <h1>Widget Settings:</h1>
+        <label for="toggleWeatherWidget">Toggle Weather Widget:</label>
+        <div class="switch">
+            <input type="checkbox" id="toggleWeatherWidget" checked>
+            <span class="slider round"></span>
+        </div>
+        <br>
+        <button id="applyColors">Apply Colors</button>
+        <button id="resetColors">Reset to Defaults</button>
     </div>
 
     <div style="overflow-y: auto; height: 100vh;">
-        <a class="weatherwidget-io" href="https://forecast7.com/en/41d41n82d69/44870/?unit=us" data-label_1="Current" data-label_2="WEATHER" data-font="Arial" data-mode="Current" data-theme="dark">SANDUSKY WEATHER</a>
+        <a class="weatherwidget-io" href="https://forecast7.com/en/41d41n82d69/44870/?unit=us" data-label_1="SANDUSKY" data-label_2="WEATHER" data-font="Arial" data-mode="Current" data-theme="dark">SANDUSKY WEATHER</a>
         <script>
         !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
         </script>
@@ -145,40 +230,44 @@
             else return localStorage.getItem('extremeWaitColor') || '#FF0000';
         }
 
-	document.getElementById('settingsButton').addEventListener('click', function() {
-	    var settings = document.getElementById('settings');
-	    settings.style.display = (settings.style.display === "none") ? "block" : "none";
-	});
-	
-	document.getElementById('applyColors').addEventListener('click', function() {
-	    var favoriteColor = document.getElementById('favoriteColor').value;
-	    var lowWaitColor = document.getElementById('lowWaitColor').value;
-	    var mediumWaitColor = document.getElementById('mediumWaitColor').value;
-	    var highWaitColor = document.getElementById('highWaitColor').value;
-	    var extremeWaitColor = document.getElementById('extremeWaitColor').value;
-	    var rideTextColor = document.getElementById('rideTextColor').value;
-	    var rideBgColor = document.getElementById('rideBgColor').value;
-	            
-	    localStorage.setItem('favoriteColor', favoriteColor);
-	    localStorage.setItem('lowWaitColor', lowWaitColor);
-	    localStorage.setItem('mediumWaitColor', mediumWaitColor);
-	    localStorage.setItem('highWaitColor', highWaitColor);
-	    localStorage.setItem('extremeWaitColor', extremeWaitColor);
-	    localStorage.setItem('rideTextColor', rideTextColor);
-	    localStorage.setItem('rideBgColor', rideBgColor);
-	
-	    document.documentElement.style.setProperty('--favorite-color', favoriteColor);
-	    document.documentElement.style.setProperty('--ride-text-color', rideTextColor);
-	    document.documentElement.style.setProperty('--ride-bg-color', rideBgColor);
-	    document.getElementById('settings').style.display = "none";
-	});
+        document.getElementById('settingsButton').addEventListener('click', function() {
+            document.getElementById('settings').style.display = "block";
+        });
 
+        document.getElementById('applyColors').addEventListener('click', function() {
+            var favoriteColor = document.getElementById('favoriteColor').value;
+            var lowWaitColor = document.getElementById('lowWaitColor').value;
+            var mediumWaitColor = document.getElementById('mediumWaitColor').value;
+            var highWaitColor = document.getElementById('highWaitColor').value;
+            var extremeWaitColor = document.getElementById('extremeWaitColor').value;
+			var rideTextColor = document.getElementById('rideTextColor').value;
+			var rideBgColor = document.getElementById('rideBgColor').value;
+            var isWeatherWidgetVisible = document.getElementById('toggleWeatherWidget').checked;
+			
+            localStorage.setItem('isWeatherWidgetVisible', isWeatherWidgetVisible);
+            localStorage.setItem('favoriteColor', favoriteColor);
+            localStorage.setItem('lowWaitColor', lowWaitColor);
+            localStorage.setItem('mediumWaitColor', mediumWaitColor);
+            localStorage.setItem('highWaitColor', highWaitColor);
+            localStorage.setItem('extremeWaitColor', extremeWaitColor);
+			localStorage.setItem('rideTextColor', rideTextColor);
+			localStorage.setItem('rideBgColor', rideBgColor);
+
+			document.documentElement.style.setProperty('--favorite-color', favoriteColor);
+			document.documentElement.style.setProperty('--ride-text-color', rideTextColor);
+			document.documentElement.style.setProperty('--ride-bg-color', rideBgColor);
+            document.getElementById('settings').style.display = "none";
+        });
 
         document.getElementById('resetColors').addEventListener('click', function() {
             localStorage.clear();
             location.reload();
+			localStorage.removeItem('isWeatherWidgetVisible');
         });
 
+        document.getElementById('toggleWeatherWidget').addEventListener('change', function() {
+            document.querySelector('.weatherwidget-io').style.display = this.checked ? "block" : "none";
+        });
 		window.onload = function() {
 			document.getElementById('favoriteColor').value = localStorage.getItem('favoriteColor') || '#FFD700';
 			document.getElementById('lowWaitColor').value = localStorage.getItem('lowWaitColor') || '#008000';
@@ -187,11 +276,15 @@
 			document.getElementById('extremeWaitColor').value = localStorage.getItem('extremeWaitColor') || '#FF0000';
 			document.getElementById('rideTextColor').value = localStorage.getItem('rideTextColor') || '#ffffff';
 			document.getElementById('rideBgColor').value = localStorage.getItem('rideBgColor') || '#000000';
-
+			document.getElementById('toggleWeatherWidget').checked = isWeatherWidgetVisible;
+			
 			var favoriteColor = localStorage.getItem('favoriteColor') || '#FFD700';
 			var rideTextColor = localStorage.getItem('rideTextColor') || '#ffffff';
 			var rideBgColor = localStorage.getItem('rideBgColor') || '#000000';
-
+			var isWeatherWidgetVisible = localStorage.getItem('isWeatherWidgetVisible') !== 'false';
+			
+            document.querySelector('.weatherwidget-io').style.display = isWeatherWidgetVisible ? "block" : "none";
+			
 			document.documentElement.style.setProperty('--favorite-color', favoriteColor);
 			document.documentElement.style.setProperty('--ride-text-color', rideTextColor);
 			document.documentElement.style.setProperty('--ride-bg-color', rideBgColor);
